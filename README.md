@@ -23,11 +23,11 @@
 
 ## 📊 ผลการเปรียบเทียบโมเดล (Model Performance)
 
-จากการทดสอบโมเดลถดถอยทั้ง 12 โมเดล เรียงลำดับตามประสิทธิภาพ $R^2$ Score (จากมากไปน้อย):
+ผลที่บันทึกจากการทดลองใน notebook สำหรับข้อมูลเดิมก่อนตัด outlier เรียงลำดับตามประสิทธิภาพ $R^2$ Score (จากมากไปน้อย):
 
 | อันดับ | Model | $R^2$ Score | RMSE | MAE | MSE |
 | :---: | :--- | :---: | :---: | :---: | :---: |
-| 🥇 | **Gradient Boosting (XGBoost)** | **0.8790** | **4,333.52** | **2,397.93** | 1.88e+07 |
+| 🥇 | **GradientBoostingRegressor** | **0.8790** | **4,333.52** | **2,397.93** | 1.88e+07 |
 | 🥈 | **CatBoost Regressor** | **0.8702** | **4,488.80** | **2,515.95** | 2.01e+07 |
 | 🥉 | **LightGBM** | **0.8666** | **4,550.62** | **2,570.57** | 2.07e+07 |
 | 4 | Bagging Regressor | 0.8617 | 4,633.14 | 2,495.32 | 2.15e+07 |
@@ -57,3 +57,33 @@
   * Data Processing: `pandas`, `numpy`
   * Data Visualization: `matplotlib`, `seaborn`
   * Machine Learning: `scikit-learn`, `catboost`, `lightgbm`
+
+
+## เริ่มต้นใช้งาน
+
+```bash
+git clone https://github.com/Panutle/medical-insurance-cost-prediction.git
+cd medical-insurance-cost-prediction
+```
+
+เปิด [`notebooks/insurance_prediction.ipynb`](notebooks/insurance_prediction.ipynb) ใน Google Colab เพราะ notebook ใช้ `google.colab.drive` และ path `/content/` จากนั้น:
+
+1. ติดตั้งไลบรารีที่ notebook ใช้ในเซลล์เริ่มต้น:
+
+   ```python
+   %pip install pandas numpy matplotlib seaborn scipy scikit-learn catboost lightgbm kaggle
+   ```
+
+2. Mount Google Drive และปรับ `KAGGLE_CONFIG_DIR` ให้ตรงกับโฟลเดอร์ที่เก็บ credential ของคุณ
+3. รันส่วนดาวน์โหลด `mirichoi0218/insurance` แล้วตรวจว่าอ่าน `insurance.csv` ได้
+4. รันส่วน EDA และ regression ตามลำดับ ก่อนทดลองส่วน cross-validation, การตัด outlier และ classification ที่อยู่ช่วงหลัง
+5. ปรับ path ของ `to_csv(...)` ใน Google Drive ให้เป็นโฟลเดอร์ที่คุณสร้างไว้ก่อนรันส่วน export
+
+หากรันผ่าน Jupyter บนเครื่อง ต้องแทนที่เซลล์ mount Drive และ path ของ Colab ก่อน repository นี้ยังไม่มี `requirements.txt` หรือ environment lock
+
+## การอ่านผลและข้อจำกัด
+
+- ชื่อ `XGBoostRegressor` ในรายการโมเดลของ notebook เป็นป้ายชื่อที่คลาดเคลื่อน: estimator ที่สร้างจริงคือ `sklearn.ensemble.GradientBoostingRegressor` ตารางด้านบนใช้ชื่อ estimator จริง
+- คะแนนใน README เป็นผลการทดลองที่บันทึกไว้ ไม่ใช่ผลการรันทดสอบใหม่ และไม่รับประกันว่าจะได้ตัวเลขเดิมทุกครั้ง เพราะบาง estimator ไม่ได้กำหนด seed
+- ผลหลังกรอง outlier จาก `charges` ประเมินบนประชากรข้อมูลที่เปลี่ยนไป จึงไม่ควรเทียบตรงกับผลข้อมูลเต็ม
+- Notebook มีทั้ง regression และการแบ่งค่าใช้จ่ายเป็นช่วงเพื่อทำ classification ควรแยกอ่านผลของแต่ละการทดลอง
